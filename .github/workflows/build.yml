@@ -1,0 +1,48 @@
+name: Build
+
+on:
+  push:
+    branches: ["**"]
+    tags-ignore: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  mingw:
+    name: MinGW-w64 (i686)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install toolchain
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends mingw-w64 cmake
+      - name: Configure
+        run: cmake -B build -DCMAKE_TOOLCHAIN_FILE=cmake/mingw-i686.cmake -DCMAKE_BUILD_TYPE=Release
+      - name: Build
+        run: cmake --build build
+      - name: Check exports
+        run: |
+          i686-w64-mingw32-objdump -p build/dinput8.dll | tee exports.txt | grep -q "file format pei-i386"
+          for f in DirectInput8Create DllCanUnloadNow DllGetClassObject DllRegisterServer DllUnregisterServer GetdfDIJoystick; do
+            grep -q "\] $f$" exports.txt || { echo "missing export $f"; exit 1; }
+          done
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dinput8-mingw
+          path: build/dinput8.dll
+
+  msvc:
+    name: MSVC (Win32)
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure
+        run: cmake -B build -A Win32
+      - name: Build
+        run: cmake --build build --config Release
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dinput8-msvc
+          path: build/Release/dinput8.dll
