@@ -30,7 +30,8 @@ to `AutoPerfectBuild.ini` at once.
 
 ## Install
 
-1. Get `dinput8.dll`, either a release build or [build it](#build).
+1. Get `dinput8.dll`: download the zip from the repository's **Releases**
+   page, or [build it](#build).
 2. Copy it into the game folder, next to `LEGOHobbit.exe`. By default that is
    `C:\Program Files (x86)\Steam\steamapps\common\LEGO - The Hobbit\`.
 3. Start the game from Steam as usual. The first start creates
@@ -83,6 +84,19 @@ Or without CMake:
 i686-w64-mingw32-g++ -std=c++17 -O2 -shared -static -DUNICODE -D_UNICODE -DWIN32_LEAN_AND_MEAN \
   -o dinput8.dll src/*.cpp src/dinput8.def -Wl,--enable-stdcall-fixup -s
 ```
+
+**Releases (GitHub Actions):** `.github/workflows/build.yml` builds every push and
+pull request, with MinGW and MSVC. To publish a release, bump `APB_VERSION` in
+`src/game.h`, commit, then push a matching tag:
+```
+git tag v0.3.3
+git push origin v0.3.3
+```
+`.github/workflows/release.yml` checks that the tag matches `APB_VERSION`. It
+then builds `dinput8.dll` and publishes a GitHub release with
+`AutoPerfectBuild-v0.3.3.zip` (`dinput8.dll`, `README.md`, `LICENSE`,
+`INSTALL.txt`) and `SHA256SUMS.txt`. Tags with a suffix, such as `v0.4.0-rc1`,
+are marked as pre-releases.
 
 To check whether your exe is the supported one, without starting the game:
 `python tools/verify_exe.py "<game folder>\LEGOHobbit.exe"`. It needs

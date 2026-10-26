@@ -1,6 +1,7 @@
 #include "ui.h"
 
 #include <stdio.h>
+#include <wchar.h>
 
 #include "config.h"
 #include "game.h"
@@ -138,11 +139,8 @@ void GetView(View& v) {
   Lock();
   v.serial = g_serial + (unsigned)GetMode() * 1000003u;  // mode can change via hotkey too
   v.lineCount = 0;
-  auto add = [&](const wchar_t* fmt, ...) {
-    va_list ap;
-    va_start(ap, fmt);
-    _vsnwprintf(v.lines[v.lineCount], 95, fmt, ap);
-    va_end(ap);
+  auto add = [&v](const wchar_t* fmt, auto... args) {
+    _snwprintf(v.lines[v.lineCount], 95, fmt, args...);
     v.lines[v.lineCount][95] = 0;
     ++v.lineCount;
   };
