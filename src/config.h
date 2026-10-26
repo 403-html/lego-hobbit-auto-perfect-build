@@ -12,7 +12,7 @@ enum class Mode : int {
 
 struct Config {
   Mode mode = Mode::AutoPerfect;
-  bool log = true;
+  bool log = false;         // AutoPerfectBuild.log (off unless Log=1)
   int cycleKey = 0;      // optional hotkey (0 = disabled)
   DWORD autoDelayMs = 350;  // AutoPerfect: delay before each automatic pick
   int instantSpeed = 8;     // Instant: fast-forward factor for the build sequence

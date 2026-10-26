@@ -34,8 +34,9 @@ static const char kDefaultIni[] =
     "; Vertical position of the Mods panel's top edge, in percent of the screen\r\n"
     "; height (0 = top, 90 = bottom). The panel is right-aligned.\r\n"
     "PanelTop=30\r\n"
-    "; Write AutoPerfectBuild.log next to the game exe (1/0)\r\n"
-    "Log=1\r\n";
+    "; Write AutoPerfectBuild.log next to the game exe (1 = on, 0 = off).\r\n"
+    "; Turn on when testing or reporting a problem.\r\n"
+    "Log=0\r\n";
 
 void WriteDefaultConfig(const wchar_t* iniPath) {
   HANDLE h = CreateFileW(iniPath, GENERIC_WRITE, 0, nullptr, CREATE_NEW, FILE_ATTRIBUTE_NORMAL,
@@ -55,7 +56,7 @@ void LoadConfig(const wchar_t* iniPath, Config& cfg) {
     cfg.mode = Mode::Instant;
   else
     cfg.mode = Mode::AutoPerfect;
-  cfg.log = GetPrivateProfileIntW(L"AutoPerfectBuild", L"Log", 1, iniPath) != 0;
+  cfg.log = GetPrivateProfileIntW(L"AutoPerfectBuild", L"Log", 0, iniPath) != 0;
   cfg.cycleKey = (int)GetPrivateProfileIntW(L"AutoPerfectBuild", L"CycleKey", 0, iniPath);
   cfg.autoDelayMs = GetPrivateProfileIntW(L"AutoPerfectBuild", L"AutoDelayMs", 350, iniPath);
   if (cfg.autoDelayMs > 5000) cfg.autoDelayMs = 5000;

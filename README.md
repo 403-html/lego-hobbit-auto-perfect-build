@@ -34,7 +34,7 @@ to `AutoPerfectBuild.ini` at once.
 2. Copy it into the game folder, next to `LEGOHobbit.exe`. By default that is
    `C:\Program Files (x86)\Steam\steamapps\common\LEGO - The Hobbit\`.
 3. Start the game from Steam as usual. The first start creates
-   `AutoPerfectBuild.ini` and `AutoPerfectBuild.log` in the same folder.
+   `AutoPerfectBuild.ini` in the same folder (and `AutoPerfectBuild.log` if `Log=1`).
 
 No game files are replaced or edited. The archives and the exe are untouched on
 disk, and DRM is not touched either: the Steam exe has no DRM wrapper, and the mod
@@ -58,7 +58,7 @@ panel, or `Mode=Vanilla` in the ini.
 | `InstantSpeed` | `8` | Instant Build fast-forward factor (1–20) |
 | `PanelTop` | `30` | Mods panel top edge, % of screen height (right-aligned) |
 | `CycleKey` | `0` | Optional hotkey that cycles modes without pausing (virtual-key code, e.g. `119` = F8; 0 = off) |
-| `Log` | `1` | Write `AutoPerfectBuild.log` |
+| `Log` | `0` | Write `AutoPerfectBuild.log` next to the exe (set to `1` when testing or reporting a problem) |
 
 ## Build
 

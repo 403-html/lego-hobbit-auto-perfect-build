@@ -3,7 +3,7 @@
 
 #include "config.h"
 
-#define APB_VERSION "0.3.2"
+#define APB_VERSION "0.3.3"
 
 namespace apb {
 

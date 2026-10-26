@@ -1,7 +1,8 @@
 # In-game tests
 
-All tests use the normal game started from Steam (`LEGOHobbit.exe`). After each
-test, quit the game and read `AutoPerfectBuild.log` next to the exe. The log is
+All tests use the normal game started from Steam (`LEGOHobbit.exe`). Logging is
+off by default, so first set `Log=1` in `AutoPerfectBuild.ini`. After each test,
+quit the game and read `AutoPerfectBuild.log` next to the exe. The log is
 recreated every time the game starts.
 
 A good build to repeat is **An Unexpected Party → the Bag End dining table**.
