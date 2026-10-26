@@ -1,9 +1,8 @@
 name: Build
 
+# Compile check for pull requests (and on demand from the Actions tab).
+# Releases are built by release.yml.
 on:
-  push:
-    branches: ["**"]
-    tags-ignore: ["v*"]
   pull_request:
   workflow_dispatch:
 

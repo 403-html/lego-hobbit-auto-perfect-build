@@ -85,18 +85,14 @@ i686-w64-mingw32-g++ -std=c++17 -O2 -shared -static -DUNICODE -D_UNICODE -DWIN32
   -o dinput8.dll src/*.cpp src/dinput8.def -Wl,--enable-stdcall-fixup -s
 ```
 
-**Releases (GitHub Actions):** `.github/workflows/build.yml` builds every push and
-pull request, with MinGW and MSVC. To publish a release, bump `APB_VERSION` in
-`src/game.h`, commit, then push a matching tag:
-```
-git tag v0.3.3
-git push origin v0.3.3
-```
-`.github/workflows/release.yml` checks that the tag matches `APB_VERSION`. It
-then builds `dinput8.dll` and publishes a GitHub release with
-`AutoPerfectBuild-v0.3.3.zip` (`dinput8.dll`, `README.md`, `LICENSE`,
-`INSTALL.txt`) and `SHA256SUMS.txt`. Tags with a suffix, such as `v0.4.0-rc1`,
-are marked as pre-releases.
+**Releases (GitHub Actions):** create a release on GitHub (Releases → *Draft a new
+release*), choose a new tag such as `v0.3.4`, and publish it.
+`.github/workflows/release.yml` then builds `dinput8.dll` from that tag and stamps
+the tag's version into it. It attaches `AutoPerfectBuild-v0.3.4.zip`
+(`dinput8.dll`, `README.md`, `LICENSE`, `INSTALL.txt`) and `SHA256SUMS.txt` to the
+same release. You can rebuild an existing release from the Actions tab
+(*Release* → *Run workflow*, enter the tag). `.github/workflows/build.yml` is a
+compile check, with MinGW and MSVC, that runs on pull requests or on demand.
 
 To check whether your exe is the supported one, without starting the game:
 `python tools/verify_exe.py "<game folder>\LEGOHobbit.exe"`. It needs

@@ -1,14 +1,16 @@
 name: Release
 
-# Push a tag like v0.3.3 (it must match APB_VERSION in src/game.h) to build
-# dinput8.dll and publish a GitHub release with a ready-to-install zip.
+# Create (publish) a release on GitHub with a tag such as v0.3.4. This workflow
+# then builds dinput8.dll from that tag, stamps the version into it and attaches
+# AutoPerfectBuild-<tag>.zip and SHA256SUMS.txt to the same release.
+# It can also be re-run by hand from the Actions tab for an existing release.
 on:
-  push:
-    tags: ["v*"]
+  release:
+    types: [published]
   workflow_dispatch:
     inputs:
       tag:
-        description: "Existing tag to (re)build, e.g. v0.3.3"
+        description: "Tag of an existing release to rebuild, e.g. v0.3.4"
         required: true
 
 permissions:
@@ -18,25 +20,26 @@ jobs:
   release:
     runs-on: ubuntu-24.04
     env:
-      TAG: ${{ github.event.inputs.tag || github.ref_name }}
+      TAG: ${{ github.event.release.tag_name || github.event.inputs.tag }}
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ env.TAG }}
 
-      - name: Check tag matches APB_VERSION
+      - name: Version from tag
         run: |
-          ver=$(sed -n 's/^#define APB_VERSION "\(.*\)"/\1/p' src/game.h)
-          echo "APB_VERSION=$ver, tag=$TAG"
-          [ "v$ver" = "$TAG" ] || { echo "::error::Tag $TAG does not match APB_VERSION $ver in src/game.h"; exit 1; }
+          ver="${TAG#v}"
+          echo "VERSION=$ver" >> "$GITHUB_ENV"
+          echo "Building version $ver from tag $TAG"
 
       - name: Install toolchain
         run: sudo apt-get update && sudo apt-get install -y --no-install-recommends mingw-w64 cmake zip
 
       - name: Build
         run: |
-          cmake -B build -DCMAKE_TOOLCHAIN_FILE=cmake/mingw-i686.cmake -DCMAKE_BUILD_TYPE=Release
+          cmake -B build -DCMAKE_TOOLCHAIN_FILE=cmake/mingw-i686.cmake -DCMAKE_BUILD_TYPE=Release -DAPB_VERSION="$VERSION"
           cmake --build build
+          strings build/dinput8.dll | grep -qx "$VERSION" || { echo "::error::version string missing from DLL"; exit 1; }
 
       - name: Package
         run: |
@@ -58,24 +61,7 @@ jobs:
           (cd dist && sha256sum "$name.zip" "$name/dinput8.dll" > SHA256SUMS.txt)
           cat dist/SHA256SUMS.txt
 
-      - name: Publish release
+      - name: Attach to release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: |
-          name="AutoPerfectBuild-$TAG"
-          prerelease=""
-          case "$TAG" in *-*) prerelease="--prerelease";; esac
-          notes="Install: unzip and copy \`dinput8.dll\` next to \`LEGOHobbit.exe\`. Pause in game and press **Tab** (controller: **Back**) for the MODS panel. Uninstall: delete \`dinput8.dll\`.
-
-          Supports only the Steam \`LEGOHobbit.exe\` (32-bit DX9). On any other executable the mod stays inactive.
-
-          SHA-256:
-          \`\`\`
-          $(cat dist/SHA256SUMS.txt)
-          \`\`\`"
-          if gh release view "$TAG" >/dev/null 2>&1; then
-            gh release upload "$TAG" "dist/$name.zip" dist/SHA256SUMS.txt --clobber
-          else
-            gh release create "$TAG" "dist/$name.zip" dist/SHA256SUMS.txt \
-              --title "Auto Perfect Build $TAG" --notes "$notes" $prerelease
-          fi
+        run: gh release upload "$TAG" "dist/AutoPerfectBuild-$TAG.zip" dist/SHA256SUMS.txt --clobber --repo "$GITHUB_REPOSITORY"

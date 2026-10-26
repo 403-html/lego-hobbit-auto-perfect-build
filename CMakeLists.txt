@@ -27,6 +27,13 @@ add_library(dinput8 SHARED
 set_target_properties(dinput8 PROPERTIES PREFIX "" OUTPUT_NAME "dinput8")
 target_compile_definitions(dinput8 PRIVATE UNICODE _UNICODE WIN32_LEAN_AND_MEAN)
 
+# Optional version string baked into the DLL (shown in the log); the release
+# workflow sets it from the GitHub release tag. Default: the value in src/game.h.
+set(APB_VERSION "" CACHE STRING "Version string override, e.g. 0.3.3")
+if(APB_VERSION)
+  target_compile_definitions(dinput8 PRIVATE APB_VERSION="${APB_VERSION}")
+endif()
+
 if(MSVC)
   target_compile_options(dinput8 PRIVATE /W4 /O2)
   set_property(TARGET dinput8 PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded")  # static CRT
