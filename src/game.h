@@ -3,7 +3,10 @@
 
 #include "config.h"
 
+// Release builds pass the GitHub release tag (without "v") via CMake -DAPB_VERSION=...
+#ifndef APB_VERSION
 #define APB_VERSION "0.3.3"
+#endif
 
 namespace apb {
 
